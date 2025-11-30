@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import localFont from "next/font/local";
 import ThemeProvider from "@/Theme";
-import NavBar from "@/components/navigation/navbar";
+import { ReactNode } from "react";
 
 const inter = localFont({
   src: "./fonts/Inter-VF.ttf",
@@ -28,13 +28,12 @@ export const metadata: Metadata = {
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode;
+  children: ReactNode;
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${inter.className} ${spaceGrotesk.variable} antialiased`}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-          <NavBar />
           {children}
         </ThemeProvider>
       </body>

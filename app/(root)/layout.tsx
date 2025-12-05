@@ -1,11 +1,17 @@
-import { ReactNode } from "react";
+import React, { ReactNode } from "react";
 import NavBar from "@/components/navigation/navbar";
+import LeftSidebar from "@/components/navigation/LeftSidebar";
 
-const RootLayout = ({ children }: { children: ReactNode }) => {
+const RootLayout = async ({ children }: { children: ReactNode }) => {
   return (
-    <main>
+    <main className="background-light850_dark100 flex">
       <NavBar />
-      {children}
+      <div className="flex">
+        <LeftSidebar />
+      </div>
+      <section className="flex min-h-screen flex-1 flex-col px-6 pt-36 pb-6 max-md:pb-14 sm:px-14">
+        <div className="mx-auto w-full max-w-5xl">{children}</div>
+      </section>
     </main>
   );
 };

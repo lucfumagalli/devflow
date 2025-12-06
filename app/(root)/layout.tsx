@@ -1,6 +1,7 @@
 import React, { ReactNode } from "react";
 import NavBar from "@/components/navigation/navbar";
 import LeftSidebar from "@/components/navigation/LeftSidebar";
+import RightSidebar from "@/components/navigation/RightSidebar";
 
 const RootLayout = async ({ children }: { children: ReactNode }) => {
   return (
@@ -12,6 +13,7 @@ const RootLayout = async ({ children }: { children: ReactNode }) => {
       <section className="flex min-h-screen flex-1 flex-col px-6 pt-36 pb-6 max-md:pb-14 sm:px-14">
         <div className="mx-auto w-full max-w-5xl">{children}</div>
       </section>
+      <RightSidebar />
     </main>
   );
 };

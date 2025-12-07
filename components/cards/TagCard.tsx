@@ -1,5 +1,5 @@
 import Link from "next/link";
-import ROUTES from "@/constants/route";
+import ROUTES from "@/constants/routes";
 import { Badge } from "@/components/ui/badge";
 import { getDeviconClassName } from "@/lib/utils";
 

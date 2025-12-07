@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { toast } from "sonner";
-import ROUTES from "@/constants/route";
+import ROUTES from "@/constants/routes";
 import { OctagonXIcon } from "lucide-react";
 import { signIn } from "next-auth/react";
 

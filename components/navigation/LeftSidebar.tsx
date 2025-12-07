@@ -1,7 +1,7 @@
 import React from "react";
 import NavLinks from "@/components/navigation/navbar/NavLinks";
 import Link from "next/link";
-import ROUTES from "@/constants/route";
+import ROUTES from "@/constants/routes";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 

@@ -3,10 +3,8 @@ import { APIErrorResponse } from "@/types/global";
 import dbConnect from "@/lib/mongoose";
 import User from "@/database/user.model";
 import { NextResponse } from "next/server";
-import { request } from "node:http";
 import { UserSchema } from "@/lib/validations";
 import { ValidationError } from "@/lib/http-errors";
-import { z } from "zod";
 
 export async function GET() {
   try {

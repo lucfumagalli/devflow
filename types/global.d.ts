@@ -1,4 +1,3 @@
-import { boolean } from "zod";
 import { NextResponse } from "next/server";
 
 interface Tag {

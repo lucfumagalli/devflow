@@ -1,6 +1,6 @@
-import React from "react";
+const Profile = async ({ params }: { params: Promise<{ id: string }> }) => {
+  const { id } = await params;
 
-const Profile = ({ id }: { id: string }) => {
-  return <div>Profile</div>;
+  return <div>Profile {id}</div>;
 };
 export default Profile;

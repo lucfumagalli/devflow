@@ -13,18 +13,24 @@ import TagCard from "../cards/TagCard";
 import { Button } from "../ui/button";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "../ui/form";
 import { Input } from "../ui/input";
-import { createQuestion } from "@/lib/actions/question.action";
+import { createQuestion, editQuestion } from "@/lib/actions/question.action";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import ROUTES from "@/constants/routes";
 import { OctagonXIcon } from "lucide-react";
 import { ReloadIcon } from "@radix-ui/react-icons";
+import { Question } from "@/types/global";
 
 const Editor = dynamic(() => import("@/components/editor"), {
   ssr: false,
 });
 
-const QuestionForm = () => {
+interface Params {
+  question?: Question;
+  isEdit?: boolean;
+}
+
+const QuestionForm = ({ question, isEdit = false }: Params) => {
   const router = useRouter();
   const editorRef = useRef<MDXEditorMethods>(null);
   const [isPending, startTransition] = useTransition();
@@ -32,13 +38,14 @@ const QuestionForm = () => {
   const form = useForm<z.infer<typeof AskQuestionSchema>>({
     resolver: zodResolver(AskQuestionSchema),
     defaultValues: {
-      title: "",
-      content: "",
-      tags: [],
+      title: question?.title || "",
+      content: question?.content || "",
+      tags: question?.tags.map((tag) => tag.name) ?? [],
     },
   });
 
-  const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, field: { value: string[] }) => {
+  const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, field: { value: string[] | undefined }) => {
+    if (!field.value) return;
     if (e.key === "Enter") {
       e.preventDefault();
       const tagInput = e.currentTarget.value.trim();
@@ -61,7 +68,9 @@ const QuestionForm = () => {
     }
   };
 
-  const handleTagRemove = (tag: string, field: { value: string[] }) => {
+  const handleTagRemove = (tag: string, field: { value: string[] | undefined }) => {
+    if (!field.value) return;
+
     const newTags = field.value.filter((t) => t !== tag);
 
     form.setValue("tags", newTags);
@@ -76,6 +85,23 @@ const QuestionForm = () => {
 
   const handleCreateQuestion = async (data: z.infer<typeof AskQuestionSchema>) => {
     startTransition(async () => {
+      if (isEdit && question) {
+        const result = await editQuestion({ questionId: question._id, ...data });
+        if (result.success) {
+          toast.success("Question updated successfully!");
+          if (result.data) {
+            router.push(ROUTES.QUESTION(result.data._id));
+          } else {
+            toast.error(`Error ${result.status}`, {
+              description: result.error?.message ?? "Something went wrong",
+              icon: <OctagonXIcon className="size-4" />,
+            });
+          }
+        }
+
+        return;
+      }
+
       const result = await createQuestion(data);
 
       if (result.success) {
@@ -125,7 +151,7 @@ const QuestionForm = () => {
                 Detailed explanation of your problem <span className="text-primary-500">*</span>
               </FormLabel>
               <FormControl>
-                <Editor value={field.value} editorRef={editorRef} fieldChange={field.onChange} />
+                <Editor value={field.value!} editorRef={editorRef} fieldChange={field.onChange} />
               </FormControl>
               <FormDescription className="body-regular text-light-500 mt-2.5">
                 Introduce the problem and expand on what you&apos;ve put in the title.
@@ -182,7 +208,7 @@ const QuestionForm = () => {
                 <span>Submitting..</span>
               </>
             ) : (
-              <>Ask A Question</>
+              <>{isEdit ? "Edit" : "Ask a Question"}</>
             )}
           </Button>
         </div>

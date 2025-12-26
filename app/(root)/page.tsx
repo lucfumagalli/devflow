@@ -6,6 +6,7 @@ import ROUTES from "@/constants/routes";
 import HomeFilter from "@/components/filters/HomeFilter";
 import QuestionCard from "@/components/cards/QuestionCard";
 import { auth } from "@/auth";
+import { getQuestions } from "@/lib/actions/question.action";
 
 const questions = [
   {
@@ -45,9 +46,17 @@ interface SearchParams {
 const Home = async ({ searchParams }: SearchParams) => {
   const session = await auth();
   console.log("Session: ", session);
-  const { query = "", filter = "" } = await searchParams;
 
-  const filteredQuestions = questions.filter((question) => question.title.toLowerCase().includes(query?.toLowerCase()));
+  const { page, pageSize, query, filter } = await searchParams;
+
+  const { success, data, error } = await getQuestions({
+    page: Number(page) || 1,
+    pageSize: Number(pageSize) || 10,
+    query,
+    filter,
+  });
+
+  const { questions } = data || {};
 
   return (
     <>
@@ -62,11 +71,21 @@ const Home = async ({ searchParams }: SearchParams) => {
         <LocalSearch route="/" imgSrc="/icons/search.svg" placeholder="Search questions..." otherClasses="flex-1" />
       </section>
       <HomeFilter />
-      <div className="mt-10 flex w-full flex-col gap-6">
-        {filteredQuestions.map((question) => (
-          <QuestionCard key={question._id} question={question} />
-        ))}
-      </div>
+      {success ? (
+        <div className="mt-10 flex w-full flex-col gap-6">
+          {questions && questions.length > 0 ? (
+            questions.map((question) => <QuestionCard key={question._id} question={question} />)
+          ) : (
+            <div className="mt-10 flex w-full items-center justify-center">
+              <p className="text-dark400_light700">No Questions found</p>
+            </div>
+          )}
+        </div>
+      ) : (
+        <div className="mt-10 flex w-full items-center justify-center">
+          <p className="text-dark400_light700">{error?.message || "Failed to fetch question"}</p>
+        </div>
+      )}
     </>
   );
 };
